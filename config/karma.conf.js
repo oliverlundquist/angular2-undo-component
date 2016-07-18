@@ -7,7 +7,8 @@ module.exports = function (config) {
     frameworks: ['jasmine'],
     plugins: [
       require('karma-jasmine'),
-      require('karma-chrome-launcher')
+      require('karma-chrome-launcher'),
+      require('karma-coverage')
     ],
     customLaunchers: {
       // chrome setup for travis CI using chromium
@@ -34,8 +35,15 @@ module.exports = function (config) {
       // Vendor packages might include spec files. We don't want to use those.
       'dist/vendor/**/*.spec.js'
     ],
-    preprocessors: {},
-    reporters: ['progress'],
+    preprocessors: {
+      'dist/app/**/!(*.spec)+(.js)': ['coverage']
+    },
+    coverageReporter: {
+      type: 'lcovonly',
+      dir: 'build',
+      subdir: '.'
+    },
+    reporters: ['progress', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

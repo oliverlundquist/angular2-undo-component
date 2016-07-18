@@ -1,0 +1,8 @@
+machine:
+  node:
+    version: 4.4.5
+test:
+  override:
+    - ./node_modules/.bin/ng build
+    - ./node_modules/.bin/karma start ./config/karma.conf.js --single-run
+    - cat ./build/lcov.info | ./node_modules/coveralls/bin/coveralls.js
