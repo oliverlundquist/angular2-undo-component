@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Store } from './shared/store/store';
 import * as Redux from 'redux';
+import * as Immutable from 'immutable';
 
 @Component({
     moduleId: module.id,
@@ -15,14 +16,16 @@ export class AppComponent {
     private reducer2: Redux.Reducer<Object>;
     private reducers: Redux.ReducersMapObject;
     private compound: Redux.Store<Object>;
-    private history: Array<Object>;
+    private history: Immutable.List<Object>;
     // private loggerz: Redux.Middleware;
     private loggerz: any;
+    private lister: Immutable.List<Object>;
 
     constructor() {
-        this.history = [];
+        this.history = Immutable.List.of({});
         this.loggerz = store => next => action => {
-            this.history.push(store.getState());
+            this.history = this.history.push(store.getState());
+            console.log(this.history.toArray());
             return next(action);
         }
 
@@ -38,8 +41,8 @@ export class AppComponent {
         this.registerCallback();
 
         this.dispatchAction();
-        this.dispatchAction();
-        this.dispatchAction();
+        // this.dispatchAction();
+        // this.dispatchAction();
 
     }
 
