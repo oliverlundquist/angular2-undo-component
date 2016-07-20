@@ -19,7 +19,6 @@ export class AppComponent {
 
     constructor() {
         this.reducer = this.stateReducer.bind(this);
-        this.history = Immutable.List.of({});
         this.manager = this.stateManager.bind(this);
         this.state   = Redux.createStore(this.reducer, Redux.applyMiddleware(this.manager));
 
@@ -28,17 +27,20 @@ export class AppComponent {
 
         // fire event
         this.state.dispatch({ type: 'SOME_ACTION' });
-        // this.state.dispatch({ type: 'SOME_ACTION' });
+        this.state.dispatch({ type: 'SOME_ACTION' });
+        this.state.dispatch({ type: 'SOME_ACTION' });
     }
 
-    stateReducer(state:Immutable.Map<String,Number>, action:Object) {
-        let timestamp = +(new Date()).getTime();
-        if (typeof state === 'undefined') { return Immutable.Map({time: timestamp}) }
-        console.log(state.toJS());
-        return state.set('time', timestamp);
+    clickFunction() {
+        console.log('click click');
     }
 
-    stateHandler() {
+    stateReducer(state:Immutable.Map<String,Object>, action):Immutable.Map<String,Object> {
+        if (typeof state === 'undefined') { return Immutable.Map({ time: this.getTimestamp() }) }
+        return state.set('time', this.getTimestamp());
+    }
+
+    stateHandler():void {
         //
     }
 
@@ -51,11 +53,17 @@ export class AppComponent {
             let result = next(action);
 
             // After Middleware
-            this.history = this.history.push(store.getState().toJS());
+            this.history = typeof this.history === 'undefined' ?
+                                    this.history = Immutable.List.of(store.getState().toJS()) :
+                                    this.history = this.history.push(store.getState().toJS());
 
             // End of Lifecycle
             return result;
         }
+    }
+
+    getTimestamp():Number {
+        return +(new Date()).getTime();
     }
 
 }
