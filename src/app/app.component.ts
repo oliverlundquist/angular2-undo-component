@@ -24,13 +24,15 @@ export class AppComponent {
     constructor() {
         this.history = Immutable.List.of({});
         this.loggerz = store => next => action => {
-            this.history = this.history.push(store.getState());
-            console.log(this.history.toArray());
+            // let newState = Immutable.fromJS(store.getState()).toObject();
+            this.history = this.history.push(store.getState().reducer1.toArray()
+                                                .concat(store.getState().reducer2.toArray()));
+            // console.log(this.history.toArray());
             return next(action);
         }
 
-        this.reducer1 = (s = { count1: 1 }, a) => { s.count1 += 1; return s; }
-        this.reducer2 = (s = { count2: 1 }, a) => { s.count2 += 2; return s; }
+        this.reducer1 = (s = Immutable.Map({ count1: 0 }), a) => s.set('count1', (s.get('count1') + 1))
+        this.reducer2 = (s = Immutable.Map({ count2: 0 }), a) => s.set('count2', (s.get('count2') + 2))
         this.reducers = { 'reducer1' : this.reducer1, 'reducer2': this.reducer2 };
         this.compound = Redux.createStore(
                 Redux.combineReducers(this.reducers),
@@ -49,12 +51,13 @@ export class AppComponent {
     dispatchAction () {
         this.compound.dispatch({ type: 'SOME_ACTION' });
         this.compound.dispatch({ type: 'SOME_ACTION' });
+        this.compound.dispatch({ type: 'SOME_ACTION' });
     }
 
     registerCallback() {
         this.compound.subscribe(() => {
             // console.log('subscribing', this.compound.getState());
-            console.log(this.history);
+            console.log(this.history.toArray());
         })
     }
 
